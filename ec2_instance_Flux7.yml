@@ -1,0 +1,36 @@
+# Creating AWS EC2 Instance
+---
+ - hosts: localhost
+   tasks:
+    - name: Setting up Security group
+      ec2_group:
+         name: Ansible_Security_Grp
+         description:  Rules Allowing Traffic on port 22 and 80
+         region: us-east-2 
+         rules:
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+         rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+      tags: Security_Grp
+
+    - name: Launching ASW EC2 instance
+      ec2:
+       key_name: all_aws_instances
+       region: us-east-2
+       instance_type: t2.micro
+       image: ami-0022ebeda476ffd59
+       group: Ansible_Security_Grp
+       vpc_subnet_id: subnet-78545532
+       assign_public_ip: yes
+       count: 1
+       instance_tags:
+         Name: webserver1
+      tags: Launch_ec2
